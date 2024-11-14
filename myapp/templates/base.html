@@ -1,3 +1,4 @@
+{% load static %}
 {% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +11,7 @@
       {% endblock %}
     </title>
     {% tailwind_css %}
+    <script src="{% static 'js/main.js' %}"></script>
   </head>
   <body>
     <div class="container">{% block content %} {% endblock %}</div>
