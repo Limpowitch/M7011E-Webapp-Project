@@ -1,0 +1,25 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% tailwind_css %}
+</head>
+
+<body class="bg-slate-900">
+    {% include "navbar.html" %}
+
+    <div class="flex flex-col mx-auto w-3/5 bg-green-600 min-h-[60vh] mt-4 grow-1 border-white border-[3vh]">
+        <img src="{{ recipe.0.imageurl }}" alt="{{ recipe.0.recipename }}" class="object-cover w-full h-[60vh]">
+
+        <p class="text-red-600 font-navBar text-sm">{{ recipe.0.category }}</p>
+        <p class="text-2xl font-recipeTitle tracking-wide">{{ recipe.0.title }}</p>
+        <p class="text-gray-600">{{ recipe.0.description }}</p>
+        
+    </div>
+
+    {% include "footer.html" %}
+</body>
+</html>

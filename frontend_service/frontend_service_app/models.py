@@ -10,5 +10,6 @@ class Recipe(models.Model):
     time = models.IntegerField()
     cost = models.IntegerField()
     kcal = models.IntegerField()
+    portions = models.IntegerField()
     imageurl = models.TextField()
     user = models.IntegerField()
