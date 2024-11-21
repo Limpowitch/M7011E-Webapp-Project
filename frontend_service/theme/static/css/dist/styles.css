@@ -844,6 +844,50 @@ select {
   margin-top: 1.5rem;
 }
 
+.-mt-\[3vh\] {
+  margin-top: -3vh;
+}
+
+.-mt-\[1vh\] {
+  margin-top: -1vh;
+}
+
+.-mt-\[5vh\] {
+  margin-top: -5vh;
+}
+
+.-mt-\[10vh\] {
+  margin-top: -10vh;
+}
+
+.-mt-\[9\.5vh\] {
+  margin-top: -9.5vh;
+}
+
+.ml-5 {
+  margin-left: 1.25rem;
+}
+
+.mt-10 {
+  margin-top: 2.5rem;
+}
+
+.-mt-\[14vh\] {
+  margin-top: -14vh;
+}
+
+.-mt-\[13vh\] {
+  margin-top: -13vh;
+}
+
+.-mt-\[15vh\] {
+  margin-top: -15vh;
+}
+
+.-mt-\[20vh\] {
+  margin-top: -20vh;
+}
+
 .flex {
   display: flex;
 }
@@ -899,6 +943,49 @@ select {
 
 .w-full {
   width: 100%;
+}
+
+.w-10 {
+  width: 2.5rem;
+}
+
+.w-\[10vh\] {
+  width: 10vh;
+}
+
+.w-\[30vh\] {
+  width: 30vh;
+}
+
+.w-\[40vh\] {
+  width: 40vh;
+}
+
+.w-1\/2 {
+  width: 50%;
+}
+
+.w-\[50vh\] {
+  width: 50vh;
+}
+
+.w-\[55vh\] {
+  width: 55vh;
+}
+
+.-translate-y-8 {
+  --tw-translate-y: -2rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.-translate-y-20 {
+  --tw-translate-y: -5rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.-translate-y-24 {
+  --tw-translate-y: -6rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .scale-110 {
@@ -957,6 +1044,14 @@ select {
   border-width: 3vh;
 }
 
+.border-4 {
+  border-width: 4px;
+}
+
+.border-solid {
+  border-style: solid;
+}
+
 .border-white {
   --tw-border-opacity: 1;
   border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
@@ -965,6 +1060,11 @@ select {
 .bg-gray-800 {
   --tw-bg-opacity: 1;
   background-color: rgb(31 41 55 / var(--tw-bg-opacity, 1));
+}
+
+.bg-green-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
 }
 
 .bg-pink-700 {
@@ -982,11 +1082,6 @@ select {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
-.bg-green-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
-}
-
 .stroke-red-600 {
   stroke: #dc2626;
 }
@@ -994,6 +1089,10 @@ select {
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.p-4 {
+  padding: 1rem;
 }
 
 .py-4 {

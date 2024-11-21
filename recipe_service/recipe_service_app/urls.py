@@ -1,10 +1,11 @@
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import RecipeListView
+from .views import RecipeListView, RecipeDetailsView
 
 urlpatterns = [
     path('recipes/', RecipeListView.as_view(), name='recipe-list'),
+    path('recipes/<int:id>/', RecipeDetailsView.as_view(), name='recipe-detail'),
 ]
 
 if settings.DEBUG:

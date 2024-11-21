@@ -8,8 +8,7 @@ def homepage(request):
     limit = 4
     
     response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/', params={'limit': limit})
-    data = response.json()
-    recipes = random.sample(data, limit)
+    recipes = response.json()
     return render(request, 'homepage.html', {'recipes': recipes})
 
 def recipe_list(request):
@@ -17,8 +16,7 @@ def recipe_list(request):
     recipes = response.json()
     return render(request, 'recipe_list.html', {'recipes': recipes})
 
-def recipe(request):
-    limit = 1
-    response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/', params={'limit': limit})
+def recipe_detail(request, id):
+    response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/{id}/')
     recipe = response.json()
     return render(request, 'recipe.html', {'recipe': recipe})
