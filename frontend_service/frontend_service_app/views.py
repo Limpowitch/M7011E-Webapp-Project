@@ -20,3 +20,4 @@ def recipe_detail(request, id):
     response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/{id}/')
     recipe = response.json()
     return render(request, 'recipe.html', {'recipe': recipe})
+

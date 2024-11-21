@@ -54,23 +54,41 @@
             </div>
         </div>
 
-        <p>Portion scaler knapp????</p>
+        <div class="flex flex-row">
+            <div class="w-1/5 bg-pink-700">
+                <p>Portion scaler</p>
+            </div>
+            
+            <div class="ml-auto ">
+                <p>placeholder star rating</p>
+            </div>
+        </div>
+        
 
         <div class="flex flex-row mt-10">
-            <div class="flex flex-col w-1/2">
-                <ol>
-                    {% for instruction in recipe.instructions %}
-                        <li>{{ instruction.step_number}}. {{ instruction.instruction }}</li>
-                    {% endfor %}
-                </ol>
-            </div>
-            <div class="flex flex-col w-1/2">
+            <div class="flex flex-col w-2/5 bg-white ">
                 <ol>
                     {% for ingredient in recipe.ingredients %}
-                        <li>{{ ingredient.ingredient}}. {{ ingredient.amount }}</li>
+                        <li class="border-b-[0.1vh] border-black mt-2">{{ ingredient.amount }} {{ ingredient.ingredient}}.</li>
+                    {% endfor %}
+                </ol>  
+            </div>
+            <div class="flex flex-col w-2/5 bg-white ml-auto ">
+                <ol>
+                    {% for instruction in recipe.instructions %}
+                        <div class="flex flex-row mt-2">
+                            <li class="font-semibold">{{ instruction.step_number}} </li>
+                            <li class="">&nbsp {{ instruction.instruction }}</li>
+                        </div>
                     {% endfor %}
                 </ol>
             </div>
+        </div>
+
+        <div>
+            <p>Placeholder comments</p>
+            <p>Placeholder comments</p>
+            <p>Placeholder comments</p>
         </div>
 
         
