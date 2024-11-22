@@ -1,4 +1,5 @@
 {% load static tailwind_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,72 +9,123 @@
     {% tailwind_css %}
 </head>
 
+<script src="{% static 'js/portionScaler.js' %}"></script>
+
 <body class="bg-slate-900">
     {% include "navbar.html" %}
 
-    <div class="flex flex-col mx-auto w-3/5 bg-green-600 min-h-[60vh] mt-4 grow-1 border-white border-[3vh]">
-        <img src="{{ recipe.imageurl }}" alt="{{ recipe.recipename }}" class="object-cover w-full h-[60vh]">
-    
-        <div class="flex mx-auto bg-white h-48 w-3/5 text-center -mt-[20vh]">
-            <div class="flex flex-col mx-auto mt-6 gap-2">
-                <p class="text-red-600 font-navBar text-sm">{{ recipe.category.name }}</p>
-                <p class="text-2xl font-recipeTitle tracking-wide">{{ recipe.title }}</p>
-                <p class="text-gray-600">{{ recipe.description }}</p>
+    <div class="flex flex-col mx-auto w-3/5 bg-white min-h-[60vh] mt-4 grow-1 border-white border-[3vh] text-stone-700">
+        <div class="relative">
+            <img src="{{ recipe.imageurl }}" alt="{{ recipe.recipename }}" class="object-cover w-full h-[60vh]">
+        
+            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex mx-auto bg-white h-48 w-3/5 text-center border-b-[0.1vh] border-stone-300">
+                <div class="flex flex-col mx-auto mt-6 gap-2">
+                    <p class="text-red-600 font-navBar text-sm">{{ recipe.category.name }}</p>
+                    <p class="text-2xl font-recipeTitle tracking-wide">{{ recipe.title }}</p>
+                    <p class="text-gray-600">{{ recipe.description }}</p>
 
-                <div class="flex flex-row mx-auto gap-5">
-                    <div class="flex flex-row gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>                              
-                        <p>{{ recipe.time }} min</p> 
-                    </div>
-                    <div class="flex flex-row gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 492.8 492.8" stroke="currentColor" stroke-width="20" class="h-5 w-5 stroke-red-600">
-                            <path d="M490.4,363.2c-4.8-4.8-9.6-8-14.4-8C469.6,238.4,376.8,144,261.6,136v-19.2c9.6-4.8,16-16,16-27.2c0-17.6-14.4-32-32-32
-                            c-17.6,0-32,14.4-32,32c0,11.2,6.4,20.8,14.4,27.2v20.8C114.4,144,21.6,238.4,15.2,355.2c-4.8,0-11.2,3.2-12.8,8
-                            c-3.2,4.8-3.2,11.2,0,16l16,27.2c6.4,11.2,17.6,28.8,44.8,28.8h366.4c27.2,0,36.8-17.6,44.8-28.8l16-27.2
-                            C493.6,374.4,493.6,368,490.4,363.2z M245.6,168c105.6,0,192,83.2,198.4,187.2H47.2C53.6,251.2,140,168,245.6,168z M445.6,390.4
-                            c-6.4,11.2-9.6,12.8-17.6,12.8H63.2c-8,0-9.6-3.2-16-12.8l-3.2-3.2h403.2L445.6,390.4z"/>
-                        </svg>
-                        <p>{{ recipe.portions }} portions</p>
-                    </div>
-                    <div class="flex flex-row gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                        </svg>
-                        <p>{{ recipe.cost }} sek</p>
-                    </div>
-                    <div class="flex flex-row gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
-                        </svg>                              
-                        <p>{{ recipe.kcal }} kcal</p>
+                    <div class="flex flex-row mx-auto gap-5">
+                        <div class="flex flex-row gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 stroke-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>                              
+                            <p>{{ recipe.time }} min</p> 
+                        </div>
+                        <div class="flex flex-row gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 stroke-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg>
+                            <p>{{ recipe.cost }} sek</p>
+                        </div>
+                        <div class="flex flex-row gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 stroke-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
+                            </svg>                              
+                            <p>{{ recipe.kcal }} kcal</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <div class="flex flex-row mt-4">
+            <!-- Portion scaler -->
+            <div class="w-1/5 bg-white flex flex-row gap-[6vh] items-center justify-center border-[0.1vh] border-stone-300 ">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="xMidYMid meet"
+                    fill="none"
+                    class="w-7 h-7 stroke-stone-500 stroke-[8] cursor-pointer mr-auto hover:stroke-red-600"
+                    id="decreasePortion"
+                    role="button"
+                    aria-label="Decrease Portion">
+                    <path d="M82.1,50H17.9" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" />
+                </svg>
 
-        <div class="flex flex-row">
-            <div class="w-1/5 bg-pink-700">
-                <p>Portion scaler</p>
+                <div class="flex flex-row gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 492.8 492.8" stroke="currentColor" stroke-width="25" class="h-7 w-7 stroke-red-600">
+                        <path d="M490.4,363.2c-4.8-4.8-9.6-8-14.4-8C469.6,238.4,376.8,144,261.6,136v-19.2c9.6-4.8,16-16,16-27.2c0-17.6-14.4-32-32-32
+                        c-17.6,0-32,14.4-32,32c0,11.2,6.4,20.8,14.4,27.2v20.8C114.4,144,21.6,238.4,15.2,355.2c-4.8,0-11.2,3.2-12.8,8
+                        c-3.2,4.8-3.2,11.2,0,16l16,27.2c6.4,11.2,17.6,28.8,44.8,28.8h366.4c27.2,0,36.8-17.6,44.8-28.8l16-27.2
+                        C493.6,374.4,493.6,368,490.4,363.2z M245.6,168c105.6,0,192,83.2,198.4,187.2H47.2C53.6,251.2,140,168,245.6,168z M445.6,390.4
+                        c-6.4,11.2-9.6,12.8-17.6,12.8H63.2c-8,0-9.6-3.2-16-12.8l-3.2-3.2h403.2L445.6,390.4z"/>
+                    </svg>
+
+                    <p id="portionCount" class="">{{ recipe.portions }}</p>
+                </div>
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="xMidYMid meet"
+                    fill="none"
+                    class="w-7 h-7 stroke-stone-500 stroke-[8] cursor-pointer ml-auto hover:stroke-red-600"
+                    id="increasePortion"
+                    role="button"
+                    aria-label="Increase Portion">
+                    <path d="M50,18.8V50m0,0V81.2M50,50H81.2M50,50H18.8" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" />
+                </svg>
             </div>
-            
-            <div class="ml-auto ">
-                <p>placeholder star rating</p>
+
+            <!-- Recipe Star Rating -->
+            <div class="w-1/5 ml-auto bg-white">
+                <div class="flex items-center gap-3 justify-center" id="star-rating">
+                    {% for i in "12345" %}
+                        {% if i|add:"0" <= recipe.average_rating %}
+                            <svg class="w-7 h-7 text-yellow-300 ms-1 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                            </svg>
+                        {% else %}
+                            <svg class="w-7 h-7 text-gray-300 ms-1 dark:text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                            </svg>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
         
 
-        <div class="flex flex-row mt-10">
+        <div class="flex flex-row mt-4">
+
             <div class="flex flex-col w-2/5 bg-white ">
-                <ol>
+                <p class="font-bold text-xl">Ingredients</p>
+                <ol id="ingredientsList">
                     {% for ingredient in recipe.ingredients %}
-                        <li class="border-b-[0.1vh] border-black mt-2">{{ ingredient.amount }} {{ ingredient.ingredient}}.</li>
+                    <li class="flex justify-between py-1 border-b-[0.1vh] border-stone-300">
+                        <span class="ingredient-ingredient">{{ ingredient.ingredient }}</span>
+                        <span class="ingredient-amount" data-base-amount="{{ ingredient.amount }}">{{ ingredient.amount }} {{ ingredient.unit.name }}</span>
+                    </li>
                     {% endfor %}
                 </ol>  
             </div>
+
             <div class="flex flex-col w-2/5 bg-white ml-auto ">
+                <p class="font-bold text-xl">Instructions</p>
                 <ol>
                     {% for instruction in recipe.instructions %}
                         <div class="flex flex-row mt-2">
@@ -83,15 +135,14 @@
                     {% endfor %}
                 </ol>
             </div>
+
         </div>
 
-        <div>
-            <p>Placeholder comments</p>
-            <p>Placeholder comments</p>
-            <p>Placeholder comments</p>
+        <div class="mt-8 border-t-[0.1vh] border-stone-300">
+            {% for comment in recipe.comments %}
+                <p>Comment from reader: "{{ comment.comment }}"</p>
+            {% endfor %}
         </div>
-
-        
 
     </div>
     
