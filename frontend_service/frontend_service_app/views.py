@@ -11,10 +11,15 @@ def homepage(request):
     recipes = response.json()
     return render(request, 'homepage.html', {'recipes': recipes})
 
-def recipe_list(request):
-    response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/')
+def category(request, category):
+    response = requests.get(f'{RECIPE_SERVICE_URL}/category/{category}/')
     recipes = response.json()
-    return render(request, 'recipe_list.html', {'recipes': recipes})
+    return render(request, 'category.html', {'recipes': recipes})
+
+# def recipe_list(request):
+#     response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/')
+#     recipes = response.json()
+#     return render(request, 'recipe_list.html', {'recipes': recipes})
 
 def recipe_detail(request, id):
     response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/{id}/')
