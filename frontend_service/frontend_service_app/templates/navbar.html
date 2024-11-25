@@ -3,12 +3,29 @@
     <nav class="flex flex-row justify-between w-3/5 m-auto font-navBar text-lg">
         <div>
             <ul class="flex flex-row space-x-4">
-                <li>Baking</li>
-                <li>Soup & Stews</li>
-                <li>Pasta</li>
-                <li>Protein & Sides</li>
-                <li>Asian</li>
-                <li>Vegitarian</li>
+                <a href="{% url 'category' 'baking' %}" class="block cursor-pointer">
+                    <li>Baking</li>
+                </a>
+                <a href="{% url 'category' 'soup & stews' %}" class="block cursor-pointer">
+                    <li>Soup & Stews</li>
+                </a>
+                <a href="{% url 'category' 'pasta' %}" class="block cursor-pointer">
+                    <li>Pasta</li>
+                </a>
+                <a href="{% url 'category' 'protein & sides' %}" class="block cursor-pointer">
+                    <li>Protein & Sides</li>
+                </a>
+                <a href="{% url 'category' 'asian' %}" class="block cursor-pointer">
+                    <li>Asian</li>
+                </a>
+                <a href="{% url 'category' 'vegitarian' %}" class="block cursor-pointer">
+                    <li>Vegitarian</li>
+                </a>
+                
+                
+                
+                
+                
             </ul>
         </div>
         <div>
