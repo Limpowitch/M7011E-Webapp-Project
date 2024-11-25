@@ -1,0 +1,37 @@
+<div class="flex border h-14 sticky top-0 bg-white z-10">
+    <nav class="flex flex-row justify-between w-3/5 m-auto font-navBar text-lg">
+        <div>
+            <ul class="flex flex-row space-x-4">
+                <a href="{% url 'category' 'baking' %}" class="block cursor-pointer">
+                    <li>Baking</li>
+                </a>
+                <a href="{% url 'category' 'soup & stews' %}" class="block cursor-pointer">
+                    <li>Soup & Stews</li>
+                </a>
+                <a href="{% url 'category' 'pasta' %}" class="block cursor-pointer">
+                    <li>Pasta</li>
+                </a>
+                <a href="{% url 'category' 'protein & sides' %}" class="block cursor-pointer">
+                    <li>Protein & Sides</li>
+                </a>
+                <a href="{% url 'category' 'asian' %}" class="block cursor-pointer">
+                    <li>Asian</li>
+                </a>
+                <a href="{% url 'category' 'vegitarian' %}" class="block cursor-pointer">
+                    <li>Vegitarian</li>
+                </a>
+                
+                
+                
+                
+                
+            </ul>
+        </div>
+        <div>
+            <ul class="flex flex-row space-x-4">
+                <li>P-login</li>
+                <li><a href="{% url 'recipe_create' %}">P-create</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,11 @@
+frontend_service/
+    envFrontEnd
+
+recipe_service/
+    envRecipeService
+
+user_service/
+    myenv
+
+__pycache__/
+    *.pyc
