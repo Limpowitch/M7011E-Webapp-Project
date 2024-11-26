@@ -2,11 +2,10 @@
 # recipe_service/views.py
 
 from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework import status
 from .models import Recipe, Category
 from .serializers import RecipeSerializer, RecipeDetailsSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 class RecipeListView(generics.ListAPIView):
     serializer_class = RecipeSerializer
@@ -21,6 +20,13 @@ class RecipeListView(generics.ListAPIView):
             except ValueError:
                 pass  
         return queryset
+
+#Följande klass är enbart som exempel för att visa hur vi använder oss av JWT authentication
+class SpecialRecipeListView(generics.ListAPIView):
+    serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticated] #om inte authenticated, returnera 401 error
+
+    #begå queries etc...
     
 class CategoryRecipesView(generics.ListAPIView):
     serializer_class = RecipeSerializer

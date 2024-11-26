@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'frontend_service_app',
     'tailwind',
     'theme',
-    'django_browser_reload'
+    'django_browser_reload',
+    'rest_framework',
+    'rest_framework_simplejwt'
 ]
 
 TAILWIND_APP_NAME = 'theme'
@@ -144,3 +146,9 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}

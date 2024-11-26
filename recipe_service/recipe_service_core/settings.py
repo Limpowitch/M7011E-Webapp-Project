@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'recipe_service_app',
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 WHITENOISE_ROOT = MEDIA_ROOT
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}

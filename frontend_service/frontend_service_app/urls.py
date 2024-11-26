@@ -7,4 +7,5 @@ urlpatterns = [
     path('category/<str:category>', category, name='category'), 
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
+    path('create_recipe/', get_special_recipes, name='create-recipe')
 ]
