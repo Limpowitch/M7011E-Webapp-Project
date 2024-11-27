@@ -137,10 +137,14 @@ REST_FRAMEWORK = {
     ),
 }
 
+JWT_SIGNING_KEY = 'fc36c5qjM4ohmOozx_qqyrK0i_alqiAPHyR3kdIIQu_oW-JqAkb7AQTj1PZFu8iTxSlE04JpzhXvePVLdYuDog'  # Replace with a secure, randomly generated key
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), 
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
-    
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': JWT_SIGNING_KEY,  # Add this line
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }

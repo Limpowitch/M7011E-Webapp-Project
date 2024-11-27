@@ -1,13 +1,96 @@
+{% load static tailwind_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    {% tailwind_css %}
     <title>Mother of all omeletts</title>
     <link rel="icon" type="image/x-icon" href="{% static 'images/chef_armstrong.ico' %}">
 </head>
+
+<script src="{% static 'js/createRecipe.js' %}"></script>
+
 <body>
-    <p>balls</p>
+    {% include "navbar.html" %}
+
+    
+    <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div>
+            <input type="text" name="title" id="title" placeholder="Recipe Title" required>
+        </div>
+        
+        <div>
+            <select name="category" id="category" required>
+                <option value="" disabled selected>Category</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <textarea name="description" id="description" placeholder="Recipe Description" required></textarea>
+        </div>
+        
+        <div>
+            <input type="number" name="time" id="time" placeholder="Cooking Time (in minutes)" required>
+        </div>
+        
+        <div>
+            <input type="text" name="cost" id="cost" placeholder="Cost" required>
+        </div>
+        
+        <div>
+            <input type="number" name="kcal" id="kcal" placeholder="Calories (kcal)" required>
+        </div>
+        
+        <div>
+            <input type="number" name="portions" id="portions" placeholder="Portions" required>
+        </div>
+        
+        
+        <!-- Instructions Section -->
+        <div>
+            <div id="instructions-list">
+                <div class="instruction-item">
+                    <input type="text" name="instructions[]" placeholder="Step 1" required>
+                    <button type="button" class="remove-instruction">Remove</button>
+                </div>
+            </div>
+            <button type="button" id="add-instruction">Add Instruction</button>
+        </div>
+        
+        <!-- Ingredients Section -->
+        <div>
+            <div id="ingredients-list">
+                <div class="ingredient-item">
+                    <input type="text" name="ingredients_name[]" placeholder="Ingredient Name" required>
+                    <input type="number" name="ingredients_amount[]" placeholder="Amount" step="any" required>
+                    <select name="ingredients_unit[]" required>
+                        <option value="" disabled selected>Unit</option>
+                        {% for unit in units %}
+                            <option value="{{ unit.id }}">{{ unit.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="remove-ingredient">Remove</button>
+                </div>
+            </div>
+            <button type="button" id="add-ingredient">Add Ingredient</button>
+        </div>
+
+        <div>
+            <label for="image">Upload Image</label>
+            <input type="file" name="image" id="image" accept="image/*">
+        </div>
+
+        <button type="submit">Create Recipe</button>
+    </form>
+
+    {% include "footer.html" %}
 </body>
 </html>

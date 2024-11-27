@@ -17,8 +17,9 @@ class Recipe(models.Model):
     cost = models.IntegerField()
     kcal = models.IntegerField()
     portions = models.IntegerField()
-    imageurl = models.CharField(max_length=1000)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Disregard users for now
+    #image = models.ImageField(upload_to='recipes/', null=True, blank=True)
+    imageurl = models.CharField(max_length=1000, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title

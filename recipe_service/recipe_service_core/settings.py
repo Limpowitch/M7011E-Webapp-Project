@@ -138,12 +138,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-WHITENOISE_ROOT = MEDIA_ROOT
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+}
+
+JWT_SIGNING_KEY = 'fc36c5qjM4ohmOozx_qqyrK0i_alqiAPHyR3kdIIQu_oW-JqAkb7AQTj1PZFu8iTxSlE04JpzhXvePVLdYuDog'  # Must be the same as in user_service
+
+SIMPLE_JWT = {
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': JWT_SIGNING_KEY,  # Add or update this line
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
