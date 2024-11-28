@@ -5,8 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
+    <title>Mother of all omeletts</title>
     {% tailwind_css %}
+    <link rel="icon" type="image/x-icon" href="{% static 'images/chef_armstrong.ico' %}">
 </head>
 <body class="flex flex-col bg-slate-900 min-h-screen relative">
     
@@ -20,7 +21,7 @@
                 
                 <!-- Main displayed recipe -->
                 <div class="absolute bottom-0 left-0 right-0">
-                    <div class="flex mx-auto bg-white h-48 w-3/5 text-center">
+                    <div class="flex mx-auto bg-white h-48 w-3/5 text-center border-b-[0.1vh] border-stone-300">
                         <div class="flex flex-col mx-auto mt-6 gap-2">
                             <p class="text-red-600 font-navBar text-sm">{{ recipes.0.category.name }}</p>
                             <p class="text-2xl font-recipeTitle tracking-wide hover:text-red-600">{{ recipes.0.title }}</p>
