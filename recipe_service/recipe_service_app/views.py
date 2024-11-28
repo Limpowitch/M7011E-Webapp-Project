@@ -79,5 +79,20 @@ class RecipeCreateView(generics.CreateAPIView):
             print("Validation Errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
+class UserRecipesAPIView(ListAPIView):
+    serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow non-logged-in users to view recipes
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise Http404("User not found")
+
+        recipes = Recipe.objects.filter(user=user)
+        if not recipes.exists():
+            raise Http404(f"No recipes found for user {username}")
+        
+        return recipes  
         
