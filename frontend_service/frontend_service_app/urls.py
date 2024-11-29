@@ -7,5 +7,6 @@ urlpatterns = [
     path('category/<str:category>', category, name='category'), 
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
-    path('create_recipe/', create_recipe, name='create_recipe')
+    path('create_recipe/', create_recipe, name='create_recipe'),
+    path('register/', register, name='register'),
 ]

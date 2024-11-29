@@ -1,5 +1,7 @@
 import requests
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 class RecipeForm(forms.Form):
     title = forms.CharField(max_length=100)
@@ -27,3 +29,11 @@ class RecipeForm(forms.Form):
                 self.fields['category'].choices = []
         except requests.exceptions.RequestException:
             self.fields['category'].choices = []
+
+class RegistrationForm(forms.Form):
+    username = forms.CharField(max_length=150, required=True)
+    email = forms.EmailField(required=True)
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
+    password1 = forms.CharField(widget=forms.PasswordInput, required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput, required=True)

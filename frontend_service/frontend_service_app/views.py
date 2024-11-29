@@ -4,11 +4,12 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 import requests
 import json
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .forms import RegistrationForm
 
 RECIPE_SERVICE_URL = 'http://localhost:8001'
 USER_SERVICE_URL = 'http://localhost:8002'
-
-
 
 def homepage(request):
     limit = 4
@@ -183,5 +184,39 @@ def refresh_token_on_401(refresh_token):
     else:
         return None
 
-    
-
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            # Collect cleaned form data to send to the user_service
+            data = form.cleaned_data
+            payload = {
+                'username': data['username'],
+                'email': data['email'],
+                'first_name': data['first_name'],
+                'last_name': data['last_name'],
+                'password1': data['password1'],
+                'password2': data['password2'],
+            }
+            try:
+                # Call the user_service to register the user
+                response = requests.post(f"{USER_SERVICE_URL}/register/", json=payload)
+                if response.status_code == 201:
+                    messages.success(request, "Registration successful! Please log in.")
+                    return redirect('homepage')  # Redirect to login page
+                else:
+                    # Display errors returned by the user_service
+                    errors = response.json().get('errors', {})
+                    for field, error in errors.items():
+                        messages.error(request, f"{field}: {error}")
+            except Exception as e:
+                print(f"Error during API call: {e}")  # Add a print statement for debugging
+                messages.error(request, "An error occurred. Please try again.")
+        else:
+            # If form is invalid, display validation errors
+            for field, error in form.errors.items():
+                messages.error(request, f"{field}: {error}")
+    else:
+        # Render an empty form for GET requests
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
