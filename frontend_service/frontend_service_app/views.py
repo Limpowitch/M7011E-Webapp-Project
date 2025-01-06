@@ -7,6 +7,7 @@ import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegistrationForm
+from .forms import PasswordChangeForm
 
 RECIPE_SERVICE_URL = 'http://localhost:8001'
 USER_SERVICE_URL = 'http://localhost:8002'
@@ -188,7 +189,6 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            # Collect cleaned form data to send to the user_service
             data = form.cleaned_data
             payload = {
                 'username': data['username'],
@@ -199,24 +199,55 @@ def register(request):
                 'password2': data['password2'],
             }
             try:
-                # Call the user_service to register the user
                 response = requests.post(f"{USER_SERVICE_URL}/register/", json=payload)
                 if response.status_code == 201:
                     messages.success(request, "Registration successful! Please log in.")
-                    return redirect('homepage')  # Redirect to login page
+                    return redirect('homepage')  
                 else:
-                    # Display errors returned by the user_service
                     errors = response.json().get('errors', {})
                     for field, error in errors.items():
                         messages.error(request, f"{field}: {error}")
             except Exception as e:
-                print(f"Error during API call: {e}")  # Add a print statement for debugging
+                print(f"Error during API call: {e}")
                 messages.error(request, "An error occurred. Please try again.")
         else:
-            # If form is invalid, display validation errors
             for field, error in form.errors.items():
                 messages.error(request, f"{field}: {error}")
     else:
-        # Render an empty form for GET requests
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
+
+def change_password(request):
+    access_token = request.session.get('access_token')
+    
+    if not access_token:
+        messages.error(request, 'Please log in to change your password')
+        return redirect('login')
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            payload = {
+                'current_password': data['current_password'],
+                'new_password1': data['new_password1'],
+                'new_password2': data['new_password2'],
+            }
+            headers = {
+                'Authorization': f"Bearer {request.session.get('access_token')}",
+            }
+            try:
+                response = requests.post(f"{USER_SERVICE_URL}/change-password/", json=payload, headers=headers)
+                if response.status_code == 200:
+                    messages.success(request, "Password updated successfully.")
+                    return redirect('homepage')
+                else:
+                    errors = response.json().get('errors', {})
+                    for field, error in errors.items():
+                        messages.error(request, f"{field}: {error}")
+            except requests.exceptions.RequestException as e:
+                print(f"Request error: {e}")
+                messages.error(request, "An error occurred. Please try again.")
+    else:
+        form = PasswordChangeForm()
+    return render(request, 'change_password.html', {'form': form})

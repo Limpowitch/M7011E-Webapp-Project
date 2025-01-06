@@ -37,3 +37,8 @@ class RegistrationForm(forms.Form):
     last_name = forms.CharField(required=True)
     password1 = forms.CharField(widget=forms.PasswordInput, required=True)
     password2 = forms.CharField(widget=forms.PasswordInput, required=True)
+
+class PasswordChangeForm(forms.Form):
+    current_password = forms.CharField(widget=forms.PasswordInput, required=True)
+    new_password1 = forms.CharField(widget=forms.PasswordInput, required=True)
+    new_password2 = forms.CharField(widget=forms.PasswordInput, required=True)
