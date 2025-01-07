@@ -1,5 +1,5 @@
 # recipe_service/views.py
-
+from rest_framework.views import APIView
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.http import Http404
@@ -97,3 +97,16 @@ class UserRecipesAPIView(ListAPIView):
             raise Http404(f"No recipes found for user {username}")
         
         return recipes
+    
+class DeleteRecipeView(APIView):
+    def delete(self, request, recipe_id):
+        try:
+            recipe = Recipe.objects.get(id=recipe_id)
+
+            if recipe.user != request.user:
+                return Response({'error': 'You are not authorized to delete this recipe.'}, status=status.HTTP_403_FORBIDDEN)
+
+            recipe.delete()
+            return Response({'message': 'Recipe deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+        except Recipe.DoesNotExist:
+            return Response({'error': 'Recipe not found.'}, status=status.HTTP_404_NOT_FOUND)

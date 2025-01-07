@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify 2FA</title>
+</head>
+<body>
+    <h1>Verify 2FA</h1>
+    <form method="POST" action="{% url 'verify_2fa' %}">
+        {% csrf_token %}
+        <label for="2fa_code">Enter 2FA Code:</label>
+        <input type="text" name="user_code_2fa" id="2fa_code" required>
+        <button type="submit">Verify</button>
+    </form>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

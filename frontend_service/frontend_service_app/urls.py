@@ -11,4 +11,5 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('change-password/', change_password, name='change_password'),
     path('delete-account/', delete_account, name='delete_account'),
+    path('verify_2fa/', two_way_auth_view, name='verify_2fa'),
 ]

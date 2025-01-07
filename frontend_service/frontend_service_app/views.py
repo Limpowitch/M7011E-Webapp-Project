@@ -6,8 +6,16 @@ import requests
 import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
+
 from .forms import RegistrationForm
 from .forms import PasswordChangeForm
+from django.contrib.auth.models import User
+
+from django.utils import timezone
+import random
+import smtplib
+from email.mime.text import MIMEText
+from datetime import datetime, timedelta
 
 RECIPE_SERVICE_URL = 'http://localhost:8001'
 USER_SERVICE_URL = 'http://localhost:8002'
@@ -137,18 +145,130 @@ def create_recipe(request):
             error_message = response.json()
             print(error_message)
             return redirect('create_recipe')
+        
+def delete_recipe(request, recipe_id):
+
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        messages.error(request, 'Log in to delete recipes')
+        return redirect('login')
+
+    if request.method == 'POST':
+        headers = {
+            'Authorization': f"Bearer {request.session.get('access_token')}",
+        }
+        try:
+            response = requests.delete(f"{USER_SERVICE_URL}/{recipe_id}/", headers=headers)
+            if response.status_code == 204:
+                messages.success(request, "Recipe deleted successfully!")
+            else:
+                messages.error(request, "Failed to delete the recipe.")
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}")
+            messages.error(request, "An error occurred. Please try again.")
+    return redirect('homepage')
+
+def generate_2fa():
+    return str(random.randint(100000, 999999))
+               
+
+def send_2fa_smtp(to_email, code):
+    smtp_host = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = "boisencoola@gmail.com"
+    smtp_password = "zogw yahl afzl kmmn "
+    from_email = smtp_username
+    subject = "Here is your 2FA code"
+
+    body = f"Your 2FA code is: {code} \n\nThis code will expire in 5 minutes."
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = from_email
+    msg['To'] = to_email
+    
+    try: 
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.local_hostname="localhost"
+            server.set_debuglevel(1)
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.sendmail(from_email, to_email, msg.as_string())
+        print(f"2FA code sent to {to_email}")
+    except Exception as e:
+        print(f"Failed to send 2FA code to {to_email}: {e}")
+
 
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        next_url = request.GET.get('next', '/')
+        try:
+            user = User.objects.get(username=username)
+            user_email = user.email  # Fetch the email from the database
+        except User.DoesNotExist:
+            messages.error(request, 'User does not exist.')
+            return redirect('login')
+        print("HÄR E DU DUMDUMDAASDASDASDSADSA")
+
 
         auth_url = f'{USER_SERVICE_URL}/token/'
         data = {'username': username, 'password': password}
+        response = requests.post(auth_url, data=data)
+
+        if response.status_code == 200:
+        # Generate 2FA code
+            code = generate_2fa()
+            print(code)
+            expires_at = timezone.now() + timedelta(minutes=5)
+            request.session['user_code_2fa'] = code
+            request.session['user_code_expires_2fa'] = expires_at.isoformat()
+
+            if not user_email:
+                messages.error(request, 'No email found for user.')
+                #return redirect('homepage')  # Redirect only if no email
+                print("ingen mail")
+            send_2fa_smtp(user_email, code)
+
+            request.session['pending_username'] = username
+            request.session['pending_password'] = password
+            #request.session['next_url'] = next_url
+
+            messages.success(request, '2FA code sent to your email.')
+            return redirect('verify_2fa')  # Correct: Add return
+        else:
+            messages.error(request, 'Invalid username or password.')
+            return redirect('login')  # Or redirect back to login
+            
+def two_way_auth_view(request):
+    if request.method == 'POST':
+        user_input_code = request.POST.get('user_code_2fa', '')
+        session_code = request.session.get('user_code_2fa')
+        session_code_expires = request.session.get('user_code_expires_2fa')
+        username = request.session.get('pending_username')
+        password = request.session.get('pending_password')
+        next_url = request.session.get('next_url')
+        print("HÄR E DU DUMDUM")
+        if not session_code or not session_code_expires:
+            messages.error(request, 'No 2FA session data found or expired.')
+            return redirect('homepage') 
 
         try:
+            session_code_expires = datetime.fromisoformat(session_code_expires)
+        except ValueError:
+            messages.error(request, 'Invalid session expiration.')
+            return redirect('homepage')
+
+        if timezone.now() > session_code_expires:
+            messages.error(request, 'Code has expired, please try again.')
+            return redirect('homepage')
+
+        if user_input_code == session_code:
+            # Auth request
+            auth_url = f'{USER_SERVICE_URL}/token/'
+            data = {'username': username, 'password': password}
             response = requests.post(auth_url, data=data)
+            
             if response.status_code == 200:
                 tokens = response.json()
                 access_token = tokens['access']
@@ -157,17 +277,23 @@ def login_view(request):
                 request.session['access_token'] = access_token
                 request.session['refresh_token'] = refresh_token
                 request.session['username'] = username
-            
-                messages.success(request, f'Logged in as {username}')
-                return redirect(next_url)
+
+                # Clear session variables
+                request.session.pop('user_code_2fa', None)
+                request.session.pop('user_code_expires_2fa', None)
+                request.session.pop('pending_username', None)
+                request.session.pop('pending_password', None)
+                request.session.pop('next_url', None)
+
+                messages.success(request, f'Logged in as {username} with 2FA.')
+                return redirect(next_url or 'homepage')  # Fallback to homepage if next_url is None
             else:
-                messages.error(request, 'Invalid username or password')
-                return redirect(next_url)
-        except Exception as e:
-            messages.error(request, 'An error occurred during login.')
-            return redirect(next_url)
-    else:
-        return redirect('/')
+                messages.error(request, 'Failed to log in. Please try again.')
+                return redirect('login')
+        else:
+            messages.error(request, 'Invalid 2FA code. Please try again.')
+            return redirect('verify_2fa')
+    return render(request, 'verify_2fa.html')
 
 def logout_view(request):
     request.session.flush()
