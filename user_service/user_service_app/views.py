@@ -57,3 +57,12 @@ class ChangePasswordView(APIView):
         user.set_password(new_password1)
         user.save()
         return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
+
+class DeleteAccountView(APIView):
+    def delete(self, request):
+        user = request.user
+        if user.is_authenticated:
+            user.delete()
+            return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)

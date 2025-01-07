@@ -83,7 +83,7 @@ class RecipeCreateView(generics.CreateAPIView):
 
 class UserRecipesAPIView(ListAPIView):
     serializer_class = RecipeSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow non-logged-in users to view recipes
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         username = self.kwargs['username']
@@ -96,5 +96,4 @@ class UserRecipesAPIView(ListAPIView):
         if not recipes.exists():
             raise Http404(f"No recipes found for user {username}")
         
-        return recipes  
-        
+        return recipes

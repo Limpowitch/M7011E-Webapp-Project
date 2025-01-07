@@ -19,7 +19,7 @@ class Recipe(models.Model):
     portions = models.IntegerField()
     #image = models.ImageField(upload_to='recipes/', null=True, blank=True)
     imageurl = models.CharField(max_length=1000, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.title
@@ -46,7 +46,7 @@ class Ingredient(models.Model):
 
 class Rating(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ratings')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
         default=1,
         validators=[
@@ -60,6 +60,6 @@ class Rating(models.Model):
 
 class Comment(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     comment = models.TextField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)

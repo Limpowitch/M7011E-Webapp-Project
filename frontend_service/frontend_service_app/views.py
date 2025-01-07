@@ -251,3 +251,28 @@ def change_password(request):
     else:
         form = PasswordChangeForm()
     return render(request, 'change_password.html', {'form': form})
+
+def delete_account(request):
+
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        messages.error(request, 'Please log in to delete your account')
+        return redirect('login')
+
+    if request.method == 'POST':
+        headers = {
+            'Authorization': f"Bearer {request.session.get('access_token')}",
+        }
+        try:
+            response = requests.delete(f"{USER_SERVICE_URL}/delete-account/", headers=headers)
+            if response.status_code == 204:
+                request.session.flush()
+                messages.success(request, "Your account has been deleted. We're sad to see you go!")
+                return redirect('homepage')
+            else:
+                messages.error(request, response.json().get('error', 'Failed to delete account.'))
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}")
+            messages.error(request, "An error occurred. Please try again.")
+    return render(request, 'delete_account.html')
