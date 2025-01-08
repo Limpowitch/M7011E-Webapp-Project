@@ -12,4 +12,8 @@ urlpatterns = [
     path('change-password/', change_password, name='change_password'),
     path('delete-account/', delete_account, name='delete_account'),
     path('verify_2fa/', two_way_auth_view, name='verify_2fa'),
+    path('user_information', user_information, name='user_information'),
+    path('edit_recipe/<int:id>/', edit_recipe, name='edit_recipe'),
+    path('delete_recipe/<int:id>/', delete_recipe, name='delete_recipe'),
+
 ]

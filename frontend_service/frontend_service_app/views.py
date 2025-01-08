@@ -146,7 +146,7 @@ def create_recipe(request):
             print(error_message)
             return redirect('create_recipe')
         
-def delete_recipe(request, recipe_id):
+def delete_recipe(request, id):
 
     access_token = request.session.get('access_token')
 
@@ -154,20 +154,19 @@ def delete_recipe(request, recipe_id):
         messages.error(request, 'Log in to delete recipes')
         return redirect('login')
 
-    if request.method == 'POST':
-        headers = {
-            'Authorization': f"Bearer {request.session.get('access_token')}",
-        }
-        try:
-            response = requests.delete(f"{USER_SERVICE_URL}/{recipe_id}/", headers=headers)
-            if response.status_code == 204:
-                messages.success(request, "Recipe deleted successfully!")
-            else:
-                messages.error(request, "Failed to delete the recipe.")
-        except requests.exceptions.RequestException as e:
-            print(f"Request error: {e}")
-            messages.error(request, "An error occurred. Please try again.")
-    return redirect('homepage')
+    headers = {
+        'Authorization': f"Bearer {request.session.get('access_token')}",
+    }
+    try:
+        response = requests.delete(f"{RECIPE_SERVICE_URL}/delete_recipe/{id}/", headers=headers)
+        if response.status_code == 204:
+            print(request, "Recipe deleted successfully!")
+        else:
+            print(request, "Failed to delete the recipe.")
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        messages.error(request, "An error occurred. Please try again.")
+    return redirect('user_information')
 
 def generate_2fa():
     return str(random.randint(100000, 999999))
@@ -297,9 +296,8 @@ def two_way_auth_view(request):
 
 def logout_view(request):
     request.session.flush()
-    next_url = request.GET.get('next', '/')
     messages.success(request, 'Logged out successfully')
-    return redirect(next_url)
+    return redirect('homepage')
     
 def refresh_token_on_401(refresh_token): 
     refresh_url = f'{USER_SERVICE_URL}/token/refresh/'
@@ -384,7 +382,7 @@ def delete_account(request):
 
     if not access_token:
         messages.error(request, 'Please log in to delete your account')
-        return redirect('login')
+        return redirect('user_information')
 
     if request.method == 'POST':
         headers = {
@@ -401,4 +399,163 @@ def delete_account(request):
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
             messages.error(request, "An error occurred. Please try again.")
-    return render(request, 'delete_account.html')
+    return redirect('user_information')
+
+def user_information(request):
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        messages.error(request, 'Please log in to delete your account')
+        return redirect('login')
+    
+    username = request.session.get('username')
+    
+    response = requests.get(f'{RECIPE_SERVICE_URL}/{username}/recipes/')
+    recipes = response.json()
+    return render(request, 'user_information.html', {'recipes': recipes})
+
+def edit_recipe(request, id):
+    access_token = request.session.get('access_token')
+    refresh_token = request.session.get('refresh_token')
+
+    if not access_token:
+        messages.error(request, 'Please log in to edit a recipe.')
+        return redirect('login')
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+
+    if request.method == 'GET':
+        try:
+            categories_response = requests.get(f'{RECIPE_SERVICE_URL}/categories/', headers=headers)
+            units_response = requests.get(f'{RECIPE_SERVICE_URL}/units/', headers=headers)
+            recipe_response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/{id}/', headers=headers)
+
+            if recipe_response.status_code == 200:
+                recipe = recipe_response.json()
+                print('successfully retrieved recipe data')
+            else:
+                # Handle error or not-found logic
+                print(request, 'Recipe not found.')
+                return redirect('user_information')
+            
+            if 'instructions' in recipe:
+                # Create a list of instruction texts
+                recipe_instructions = [step['instruction'] for step in recipe['instructions'] if 'instruction' in step]
+                # Replace the original instructions with just the list of strings
+                recipe['instructions'] = recipe_instructions
+
+            if categories_response.status_code == 200 and units_response.status_code == 200:
+                categories = categories_response.json()
+                units = units_response.json()
+                print('här!!!')
+
+                # Pass the fetched data to the template, including the recipe
+                return render(request, 'edit_recipe.html', {
+                    'categories': categories,
+                    'units': units,
+                    'recipe': recipe,  # IMPORTANT: pass the recipe to the template
+                })
+            
+            elif (categories_response.status_code == 401 or units_response.status_code == 401):
+                # Handle token refresh
+                print('eller här!!')
+                new_access_token = refresh_token_on_401(refresh_token)
+                if new_access_token:
+                    request.session['access_token'] = new_access_token
+                    headers['Authorization'] = f'Bearer {new_access_token}'
+                    categories_response = requests.get(f'{RECIPE_SERVICE_URL}/categories/', headers=headers)
+                    units_response = requests.get(f'{RECIPE_SERVICE_URL}/units/', headers=headers)
+                    recipe_response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/{id}/', headers=headers)
+
+                    if recipe_response.status_code == 200:
+                        recipe = recipe_response.json()
+                    else:
+                        # Handle error or not-found logic
+                        print(request, 'Recipe not found.')
+                        return redirect('user_information')
+
+                    if categories_response.status_code == 200 and units_response.status_code == 200:
+                        categories = categories_response.json()
+                        units = units_response.json()
+
+                        # Pass the fetched data to the template, including the recipe
+                        return render(request, 'edit_recipe.html', {
+                            'categories': categories,
+                            'units': units,
+                            'recipe': recipe,  # IMPORTANT: pass the recipe to the template
+                        })
+            
+            else:
+                print(request, 'Failed to load necessary data.')
+                return redirect('user_information')
+
+        except Exception as e:
+            print(request, 'An error occurred while fetching data.')
+            return redirect('user_information')
+        
+    elif request.method == 'POST':
+        title = request.POST.get('title')
+        category_id = request.POST.get('category')
+        description = request.POST.get('description')
+        time = request.POST.get('time')
+        cost = request.POST.get('cost')
+        kcal = request.POST.get('kcal')
+        portions = request.POST.get('portions')
+        instructions_list = request.POST.getlist('instructions[]')
+        ingredient_names = request.POST.getlist('ingredients_name[]')
+        ingredient_amounts = request.POST.getlist('ingredients_amount[]')
+        ingredient_units = request.POST.getlist('ingredients_unit[]')
+
+        
+        instructions = [
+            {"step_number": idx + 1, "instruction": instr}
+            for idx, instr in enumerate(instructions_list)
+        ]
+
+        try:
+            ingredients = [
+                {"ingredient": name, "unit": int(unit_id), "amount": float(amount)}
+                for name, unit_id, amount in zip(ingredient_names, ingredient_units, ingredient_amounts)
+            ]
+        except ValueError as ve:
+            messages.error(request, f"Invalid ingredient data: {ve}")
+            return redirect('create_recipe')
+        
+        image = request.FILES.get('image')
+
+        files = {}
+        if image:
+            ext = os.path.splitext(image.name)[1]
+            unique_filename = f"{uuid.uuid4()}{ext}"
+            files['image'] = (unique_filename, image, image.content_type)
+
+        data = {
+            'title': title,
+            'category': int(category_id),
+            'description': description,
+            'time': int(time) if time else None,
+            'cost': float(cost) if cost else None,
+            'kcal': int(kcal) if kcal else None,
+            'portions': int(portions) if portions else None,
+            'instructions': json.dumps(instructions),
+            'ingredients': json.dumps(ingredients),
+        }
+
+        response = requests.put(
+            f'{RECIPE_SERVICE_URL}/edit_recipe/{id}/',
+            data=data,
+            files=files,
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+
+        if response.status_code == 200:
+            messages.success(request, 'Recipe updated successfully!')
+            return redirect('user_information')
+        else:
+            messages.error(request, 'Error while updating the recipe.')
+            return redirect('edit_recipe', id=id)
+
+
+    

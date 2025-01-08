@@ -11,7 +11,8 @@ urlpatterns = [
     path('units/', UnitListView.as_view(), name='unit-list'),
     path('create_recipe/', RecipeCreateView.as_view(), name='create-recipe'),
     path('<str:username>/recipes/', UserRecipesAPIView.as_view(), name='user-recipes'),
-    path('<str:username>/recipes/<int:recipe_id>/', DeleteRecipeView.as_view(), name='delete_recipe_api'),
+    path('delete_recipe/<int:id>/', DeleteRecipeView.as_view(), name='delete_recipe_api'),
+    path('edit_recipe/<int:id>/', RecipeUpdateView.as_view(), name='update_recipe'),
 ]
 
 if settings.DEBUG:

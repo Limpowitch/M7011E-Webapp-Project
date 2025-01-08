@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from django.http import Http404
 from .models import Recipe, Category, Unit
-from .serializers import CategorySerializer, RecipeCreateSerializer, RecipeSerializer, RecipeDetailsSerializer, UnitSerializer
+from .serializers import CategorySerializer, RecipeCreateSerializer, RecipeSerializer, RecipeDetailsSerializer, RecipeUpdateSerializer, UnitSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
@@ -99,9 +99,9 @@ class UserRecipesAPIView(ListAPIView):
         return recipes
     
 class DeleteRecipeView(APIView):
-    def delete(self, request, recipe_id):
+    def delete(self, request, id):
         try:
-            recipe = Recipe.objects.get(id=recipe_id)
+            recipe = Recipe.objects.get(id=id)
 
             if recipe.user != request.user:
                 return Response({'error': 'You are not authorized to delete this recipe.'}, status=status.HTTP_403_FORBIDDEN)
@@ -110,3 +110,33 @@ class DeleteRecipeView(APIView):
             return Response({'message': 'Recipe deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except Recipe.DoesNotExist:
             return Response({'error': 'Recipe not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+class RecipeUpdateView(generics.UpdateAPIView):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    
+    lookup_field = 'id'         # if your URL uses 'id'
+    lookup_url_kwarg = 'id'     # matching your URL kwarg
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
+    def update(self, request, *args, **kwargs):
+        print("Received update data:", request.data)
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        if instance.user != request.user:
+            return Response(
+                {'error': 'You are not authorized to update this recipe.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
