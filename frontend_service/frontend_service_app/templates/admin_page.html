@@ -1,0 +1,50 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <title>Mother of all omeletts</title>
+    {% tailwind_css %}
+    <link rel="icon" type="image/x-icon" href="{% static 'images/chef_armstrong.ico' %}">
+</head>
+<body class="flex flex-col bg-slate-900 min-h-screen">
+    {% include "navbar.html" %}
+    
+    <div class="mx-auto mt-4">
+        <a href="{% url 'administrate_users' %}" class="hover:text-red-600">Administrate users</a>
+    </div>
+
+    <div class="flex-grow">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 mx-auto w-3/5 mt-4 text-stone-700 gap-2">
+            {% for recipe in recipes %}
+                {% if recipe.id %}
+                <div class="flex flex-col bg-white min-h-[30vh]">
+                    <a href="{% url 'recipe-detail' recipe.id %}" class="block cursor-pointer flex-grow">
+                        <div class="w-4/5 h-48 mx-auto mt-6">
+                            <img src="{{ recipe.imageurl }}" alt="{{ recipe.name }}" class="object-cover w-full h-full">
+                        </div>
+                        
+                        <div class="flex flex-col mx-auto mt-6  gap-3 text-center px-4">
+                            <p class="text-red-600 font-navBar text-sm">{{ recipe.category.name }}</p>
+                            <p class="text-2xl font-recipeTitle tracking-wide">{{ recipe.title }}</p>                            
+                        </div>
+                    </a>
+                    
+                    <div class="flex flex-row justify-center gap-3 mb-4">
+                        {% if not recipe.approved %}
+                            <a href="{% url 'approve_recipe' recipe.id %}" class="hover:text-red-600">Approve</a>
+                        {% endif %}
+                        <a href="{% url 'delete_recipe' recipe.id %}" class="hover:text-red-600">Delete</a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% include "footer.html" %}
+</body>
+</html>

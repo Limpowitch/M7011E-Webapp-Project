@@ -15,5 +15,12 @@ urlpatterns = [
     path('user_information', user_information, name='user_information'),
     path('edit_recipe/<int:id>/', edit_recipe, name='edit_recipe'),
     path('delete_recipe/<int:id>/', delete_recipe, name='delete_recipe'),
+    path('admin_page/', admin_view, name='admin_page'),
+    path('approve_recipe/<int:id>/', approve_recipe, name='approve_recipe'),
+    path('administrate_users', administrate_users, name='administrate_users'),
+    path('change_to_superuser/<int:id>', change_to_superuser, name='change_to_superuser'),
+
+
+
 
 ]

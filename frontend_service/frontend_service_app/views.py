@@ -16,6 +16,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 from decouple import config
+from django.contrib.auth import authenticate, login
 
 RECIPE_SERVICE_URL = 'http://localhost:8001'
 USER_SERVICE_URL = 'http://localhost:8002'
@@ -273,6 +274,7 @@ def two_way_auth_view(request):
             return redirect('homepage')
 
         if user_input_code == session_code:
+            # External auth call to retrieve tokens
             auth_url = f'{USER_SERVICE_URL}/token/'
             data = {'username': username, 'password': password}
             response = requests.post(auth_url, data=data)
@@ -282,10 +284,20 @@ def two_way_auth_view(request):
                 access_token = tokens['access']
                 refresh_token = tokens['refresh']
 
+                # Store tokens in session as needed
                 request.session['access_token'] = access_token
                 request.session['refresh_token'] = refresh_token
                 request.session['username'] = username
 
+                # Authenticate and log the user into Django's session
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                else:
+                    messages.error(request, 'Django authentication failed.')
+                    return redirect('login')
+
+                # Clean up 2FA and temporary session data
                 request.session.pop('user_code_2fa', None)
                 request.session.pop('user_code_expires_2fa', None)
                 request.session.pop('pending_username', None)
@@ -293,7 +305,7 @@ def two_way_auth_view(request):
                 request.session.pop('next_url', None)
 
                 messages.success(request, f'Logged in as {username} with 2FA.')
-                return redirect(next_url or 'homepage')  
+                return redirect(next_url or 'homepage')
             else:
                 messages.error(request, 'Failed to log in. Please try again.')
                 return redirect('login')
@@ -559,4 +571,70 @@ def edit_recipe(request, id):
             return redirect('edit_recipe', id=id)
 
 
+def admin_view(request):
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        messages.error(request, 'Please log in to delete your account')
+        return redirect('homepage')
+        
+    limit = None
     
+    response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/', params={'limit': limit})
+    recipes = response.json()
+    print(recipes)
+    return render(request, 'admin_page.html', {'recipes': recipes}) 
+
+def approve_recipe(request, id):
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        messages.error(request, 'Please log in.')
+        return redirect('homepage')
+
+    approve_url = f"{RECIPE_SERVICE_URL}/approve_recipe/{id}/"
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    response = requests.put(approve_url, headers=headers)
+    if response.status_code == 200:
+        messages.success(request, 'Recipe approved!')
+    else:
+        messages.error(request, 'Failed to approve recipe.')
+
+    return redirect('admin_page') 
+
+def administrate_users(request):
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        messages.error(request, 'Please log in.')
+        return redirect('homepage')
+    
+    headers={'Authorization': f'Bearer {access_token}'}
+    
+    users_url = f"{USER_SERVICE_URL}/retrieve_users/"
+    response = requests.get(users_url, headers=headers)
+    users = response.json() if response.status_code == 200 else []
+    return render(request, 'administrate_users.html', {'users': users})
+
+def change_to_superuser(request, id):
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        messages.error(request, 'You must be logged in to perform this action.')
+        return redirect('login')  # Adjust this redirect as needed
+
+    user_service_url = f"{USER_SERVICE_URL}/change_to_superuser/{id}/"
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    response = requests.get(user_service_url, headers=headers)
+
+    if response.status_code == 200:
+        messages.success(request, f'User {id} has been set as superuser.')
+    else:
+        messages.error(request, f'Failed to change user {id} to superuser.')
+
+    return redirect('administrate_users')
+
+

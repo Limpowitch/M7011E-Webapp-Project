@@ -11,4 +11,6 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     path('delete-account/', DeleteAccountView.as_view(), name='delete_account_api'),
+    path('retrieve_users/', UserListView.as_view(), name='user-list'),
+    path('change_to_superuser/<int:id>/', change_to_superuser, name='change_to_superuser'),
 ]

@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from django.http import Http404
 from .models import Recipe, Category, Unit
-from .serializers import CategorySerializer, RecipeCreateSerializer, RecipeSerializer, RecipeDetailsSerializer, RecipeUpdateSerializer, UnitSerializer
+from .serializers import CategorySerializer, RecipeApprovalSerializer, RecipeCreateSerializer, RecipeSerializer, RecipeDetailsSerializer, RecipeUpdateSerializer, UnitSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
@@ -14,8 +14,11 @@ class RecipeListView(generics.ListAPIView):
     serializer_class = RecipeSerializer
 
     def get_queryset(self):
-        queryset = Recipe.objects.filter(approved=True)
         limit = self.request.query_params.get('limit', None)
+        if limit == None:
+            queryset = Recipe.objects.all()
+        else:
+            queryset = Recipe.objects.filter(approved=True)
         if limit is not None:
             try:
                 limit = int(limit)
@@ -145,4 +148,22 @@ class RecipeUpdateView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ApproveRecipeView(generics.UpdateAPIView):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeApprovalSerializer  # Use appropriate serializer
+    permission_classes = [IsAuthenticated]  # Require authentication if necessary
+
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # Update the 'approved' field to True
+        instance.approved = True
+        instance.save()
+
+        serializer = self.get_serializer(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)

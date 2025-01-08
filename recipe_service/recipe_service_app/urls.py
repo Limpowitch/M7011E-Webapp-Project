@@ -13,6 +13,8 @@ urlpatterns = [
     path('<str:username>/recipes/', UserRecipesAPIView.as_view(), name='user-recipes'),
     path('delete_recipe/<int:id>/', DeleteRecipeView.as_view(), name='delete_recipe_api'),
     path('edit_recipe/<int:id>/', RecipeUpdateView.as_view(), name='update_recipe'),
+    path('approve_recipe/<int:id>/', ApproveRecipeView.as_view(), name='approve_recipe'),
+
 ]
 
 if settings.DEBUG:

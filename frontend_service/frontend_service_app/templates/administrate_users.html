@@ -1,0 +1,43 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrate Users</title>
+  {% tailwind_css %}
+  <link rel="icon" type="image/x-icon" href="{% static 'images/chef_armstrong.ico' %}">
+</head>
+<body class="flex flex-col bg-slate-900 min-h-screen">
+  {% include "navbar.html" %}
+  
+  <div class="mx-auto mt-4">
+      <a href="{% url 'administrate_users' %}" class="hover:text-red-600">Administrate users</a>
+  </div>
+
+  <div class="flex-grow">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 mx-auto w-3/5 mt-4 text-stone-700 gap-2">
+      {% for user in users %}
+        <div class="flex flex-col bg-white p-4 mb-4">
+          <p class="font-bold">{{ user.username }}</p>
+          <p>Email: {{ user.email }}</p>
+          <p>Staff: {{ user.is_staff }}</p>
+          <p>Superuser: {{ user.is_superuser }}</p>
+          <p>Active: {{ user.is_active }}</p>
+          <p>Joined: {{ user.date_joined }}</p>
+          <div class="flex flex-row justify-center gap-3 mt-2">
+                {% if not user.is_superuser %}
+                    <a href="{% url 'change_to_superuser' user.id %}" class="hover:text-red-600">Change to Superuser</a>
+                {% endif%}
+          </div>
+        </div>
+      {% empty %}
+        <p>No users found.</p>
+      {% endfor %}
+    </div>
+  </div>
+  
+  {% include "footer.html" %}
+</body>
+</html>

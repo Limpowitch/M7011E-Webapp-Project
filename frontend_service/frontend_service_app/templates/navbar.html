@@ -32,6 +32,7 @@
         <div>
             <ul class="flex flex-row space-x-4">
                 {% if request.session.username %}
+                
                     <div>
                         <a href="{% url 'create_recipe' %}">
                             <button class=" text-white bg-green-500 rounded-xl w-[12vh] hover:shadow-lg">
@@ -39,6 +40,7 @@
                             </button>
                         </a>
                     </div>
+
                     <div>
                         <button 
                             id="dropdownButton"
@@ -55,6 +57,13 @@
                         </div>
                         
                     </div>
+
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin_page' %}?next={{ request.path }}">
+                            <button class="hover:text-red-600">Admin</button>
+                        </a>
+                    {% endif %}
+                    
                 {% else %}
                 <div class="relative inline-block text-left">
                     <button 
@@ -74,7 +83,10 @@
                     {% if not request.session.username %}
                         <a href="{% url 'register' %}">
                             <button class="hover:text-red-600">Register</button>
+                        </a>    
                     {% endif %}
+
+                    
                 {% endif %}
             </ul>
         </div>

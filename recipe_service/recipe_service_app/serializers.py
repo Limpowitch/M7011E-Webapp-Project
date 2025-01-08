@@ -55,6 +55,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'kcal',
             'portions',
             'imageurl',
+            'approved'
         ]
 
 class RecipeDetailsSerializer(serializers.ModelSerializer):
@@ -233,3 +234,8 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
                 )
 
         return instance
+    
+class RecipeApprovalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ['approved']  

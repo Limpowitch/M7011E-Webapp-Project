@@ -1,9 +1,12 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.exceptions import ValidationError
+from user_service_app.serializers import UserSerializer
+from rest_framework.permissions import IsAdminUser
 
 class RegisterView(APIView):
     def post(self, request):
@@ -68,3 +71,17 @@ class DeleteAccountView(APIView):
         else:
             print('Not authenticated')
             return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser] 
+
+def change_to_superuser(request, id):
+    user = get_object_or_404(User, id=id)
+    
+    user.is_superuser = True
+    user.save()
+        
+    permission_classes = [IsAdminUser]
+    return Response(status=status.HTTP_200_OK)
