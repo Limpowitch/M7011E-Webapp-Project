@@ -17,9 +17,9 @@ class Recipe(models.Model):
     cost = models.IntegerField()
     kcal = models.IntegerField()
     portions = models.IntegerField()
-    #image = models.ImageField(upload_to='recipes/', null=True, blank=True)
     imageurl = models.CharField(max_length=1000, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

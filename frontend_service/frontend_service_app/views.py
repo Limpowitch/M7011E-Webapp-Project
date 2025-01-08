@@ -206,8 +206,8 @@ def login_view(request):
             user_email = user.email  
         except User.DoesNotExist:
             messages.error(request, 'User does not exist.')
-            return redirect('login')
-        print("HÄR E DU DUMDUMDAASDASDASDSADSA")
+            return redirect('homepage')
+        
 
 
         auth_url = f'{USER_SERVICE_URL}/token/'
@@ -233,7 +233,7 @@ def login_view(request):
             return redirect('verify_2fa')  
         else:
             messages.error(request, 'Invalid username or password.')
-            return redirect('login')  
+            return redirect('homepage')  
             
 def two_way_auth_view(request):
     if request.method == 'POST':
@@ -243,7 +243,7 @@ def two_way_auth_view(request):
         username = request.session.get('pending_username')
         password = request.session.get('pending_password')
         next_url = request.session.get('next_url')
-        print("HÄR E DU DUMDUM")
+        
         if not session_code or not session_code_expires:
             messages.error(request, 'No 2FA session data found or expired.')
             return redirect('homepage') 
