@@ -1,0 +1,234 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% tailwind_css %}
+    <title>Mother of all omeletts</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/chef_armstrong.ico' %}">
+</head>
+
+<script src="{% static 'js/createRecipe.js' %}"></script>
+
+<body>
+    {% include "navbar.html" %}
+
+    
+    <form 
+    action="{% url 'edit_recipe' recipe.id %}" 
+    method="post" 
+    enctype="multipart/form-data"
+>
+    {% csrf_token %}
+
+    <!-- Recipe Title -->
+    <div>
+        <input 
+            type="text" 
+            name="title" 
+            id="title" 
+            placeholder="Recipe Title" 
+            value="{{ recipe.title }}" 
+            required
+        >
+    </div>
+
+    <!-- Category Dropdown -->
+    <div>
+        <select name="category" id="category" required>
+            <option value="" disabled selected>Category</option>
+            {% for category in categories %}
+                <option 
+                    value="{{ category.id }}"
+                    {% if recipe.category and recipe.category.id == category.id %}
+                        selected
+                    {% endif %}
+                >
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Description -->
+    <div>
+        <textarea 
+            name="description" 
+            id="description" 
+            placeholder="Recipe Description" 
+            required
+        >{{ recipe.description|default_if_none:'' }}</textarea>
+    </div>
+
+    <!-- Cooking Time -->
+    <div>
+        <input 
+            type="number" 
+            name="time" 
+            id="time" 
+            placeholder="Cooking Time (in minutes)"
+            value="{{ recipe.time|default_if_none:'' }}"
+            required
+        >
+    </div>
+
+    <!-- Cost -->
+    <div>
+        <input
+            type="text"
+            name="cost"
+            id="cost"
+            placeholder="Cost"
+            value="{{ recipe.cost|default_if_none:'' }}"
+            required
+        >
+    </div>
+
+    <!-- Calories -->
+    <div>
+        <input
+            type="number"
+            name="kcal"
+            id="kcal"
+            placeholder="Calories (kcal)"
+            value="{{ recipe.kcal|default_if_none:'' }}"
+            required
+        >
+    </div>
+
+    <!-- Portions -->
+    <div>
+        <input
+            type="number"
+            name="portions"
+            id="portions"
+            placeholder="Portions"
+            value="{{ recipe.portions|default_if_none:'' }}"
+            required
+        >
+    </div>
+
+    <!-- Instructions Section -->
+    <div>
+        <div id="instructions-list">
+            {% if recipe.instructions %}
+                {% for instruction in recipe.instructions %}
+                    <div class="instruction-item">
+                        <input
+                            type="text"
+                            name="instructions[]"
+                            placeholder="Step {{ forloop.counter }}"
+                            value="{{ instruction }}"
+                            required
+                        >
+                        <button type="button" class="remove-instruction">Remove</button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- If no instructions, show one empty field by default -->
+                <div class="instruction-item">
+                    <input
+                        type="text"
+                        name="instructions[]"
+                        placeholder="Step 1"
+                        required
+                    >
+                    <button type="button" class="remove-instruction">Remove</button>
+                </div>
+            {% endif %}
+        </div>
+        <button type="button" id="add-instruction">Add Instruction</button>
+    </div>
+
+    <!-- Ingredients Section -->
+    <div>
+        <div id="ingredients-list">
+            {% if recipe.ingredients %}
+                {% for ingredient in recipe.ingredients %}
+                    <div class="ingredient-item">
+                        <input
+                            type="text"
+                            name="ingredients_name[]"
+                            placeholder="Ingredient Name"
+                            value="{{ ingredient.ingredient }}"
+                            required
+                        >
+                        <input
+                            type="number"
+                            name="ingredients_amount[]"
+                            placeholder="Amount"
+                            step="any"
+                            value="{{ ingredient.amount }}"
+                            required
+                        >
+                        <select name="ingredients_unit[]" required>
+                            <option value="" disabled>Unit</option>
+                            {% for unit in units %}
+                                <option 
+                                    value="{{ unit.id }}"
+                                    {% if ingredient.unit == unit.id %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ unit.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="remove-ingredient">Remove</button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- If no ingredients, show one empty field by default -->
+                <div class="ingredient-item">
+                    <input
+                        type="text"
+                        name="ingredients_name[]"
+                        placeholder="Ingredient Name"
+                        required
+                    >
+                    <input
+                        type="number"
+                        name="ingredients_amount[]"
+                        placeholder="Amount"
+                        step="any"
+                        required
+                    >
+                    <select name="ingredients_unit[]" required>
+                        <option value="" disabled selected>Unit</option>
+                        {% for unit in units %}
+                            <option value="{{ unit.id }}">{{ unit.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="remove-ingredient">Remove</button>
+                </div>
+            {% endif %}
+        </div>
+        <button type="button" id="add-ingredient">Add Ingredient</button>
+    </div>
+
+    <!-- Image -->
+    <div>
+        <label for="image">Upload Image</label>
+        <input
+            type="file"
+            name="image"
+            id="image"
+            accept="image/*"
+        >
+        <!-- If you want to display existing image thumbnail, you can do so here if you have a URL for it -->
+        {% if recipe.image_url %}
+            <img src="{{ recipe.image_url }}" alt="Current Recipe Image" width="100px">
+        {% endif %}
+    </div>
+
+    <button type="submit">
+        {% if recipe %}Update Recipe{% else %}Create Recipe{% endif %}
+    </button>
+</form>
+
+    {% include "footer.html" %}
+</body>
+</html>
