@@ -67,7 +67,8 @@ class RecipeCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        is_approved = user.is_staff
+
+        is_approved = user.is_superuser or user.is_staff
 
         serializer.save(user=user, approved=is_approved)
 
@@ -80,13 +81,11 @@ class RecipeCreateView(generics.CreateAPIView):
             headers = self.get_success_headers(serializer.data)
             response_data = serializer.data
 
-            # Include approval status in the response
             response_data['approved'] = serializer.instance.approved
             return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             print("Validation Errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class UserRecipesAPIView(ListAPIView):
     serializer_class = RecipeSerializer

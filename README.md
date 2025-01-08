@@ -28,7 +28,7 @@ In order to get the website to run, the following commands needs to be run in a 
     - pip install -r requirements.txt
     - python manage.py runserver 8002
 
-Once all the requirements are met, you can then access the website by going to localhost:8000
+Once all the requirements are met, you can then access the website by going to localhost:8000.
 
 # Features
 
