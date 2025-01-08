@@ -23,13 +23,6 @@ class RecipeListView(generics.ListAPIView):
             except ValueError:
                 pass  
         return queryset
-
-#Följande klass är enbart som exempel för att visa hur vi använder oss av JWT authentication
-class SpecialRecipeListView(generics.ListAPIView):
-    serializer_class = RecipeSerializer
-    permission_classes = [IsAuthenticated] #om inte authenticated, returnera 401 error
-
-    #begå queries etc...
     
 class CategoryRecipesView(generics.ListAPIView):
     serializer_class = RecipeSerializer
@@ -116,8 +109,8 @@ class RecipeUpdateView(generics.UpdateAPIView):
     serializer_class = RecipeUpdateSerializer
     permission_classes = [IsAuthenticated]
     
-    lookup_field = 'id'         # if your URL uses 'id'
-    lookup_url_kwarg = 'id'     # matching your URL kwarg
+    lookup_field = 'id'         
+    lookup_url_kwarg = 'id'     
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

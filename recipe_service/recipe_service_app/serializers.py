@@ -158,7 +158,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     
 
 class RecipeUpdateSerializer(serializers.ModelSerializer):
-    # Explicitly define non-model fields
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     instructions = serializers.CharField()
     ingredients = serializers.CharField()
@@ -166,7 +165,6 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        # Include all fields you want to update, including the non-model field 'image'
         fields = [
             'title',
             'category',
@@ -177,22 +175,19 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
             'portions',
             'instructions',
             'ingredients',
-            'imageurl',  # read-only or handled internally
+            'imageurl',  
             'image',
         ]
         read_only_fields = ['imageurl']
 
     def update(self, instance, validated_data):
-        # Pop non-model fields to handle separately
         instructions_data = validated_data.pop('instructions', None)
         ingredients_data = validated_data.pop('ingredients', None)
         image = validated_data.pop('image', None)
 
-        # Update basic recipe fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
-        # Handle image if provided
         if image:
             ext = os.path.splitext(image.name)[1]
             unique_filename = f"{uuid.uuid4()}{ext}"
@@ -203,31 +198,26 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
                 for chunk in image.chunks():
                     destination.write(chunk)
             
-            # Update the imageurl field on the instance
             instance.imageurl = self.context['request'].build_absolute_uri(settings.MEDIA_URL + image_path)
 
         instance.save()
 
-        # Process instructions if provided
         if instructions_data:
             try:
                 instructions_list = json.loads(instructions_data)
             except json.JSONDecodeError:
                 instructions_list = []
 
-            # Clear and recreate instructions
             instance.instructions.all().delete()
             for instruction_data in instructions_list:
                 Instruction.objects.create(recipe=instance, **instruction_data)
 
-        # Process ingredients if provided
         if ingredients_data:
             try:
                 ingredients_list = json.loads(ingredients_data)
             except json.JSONDecodeError:
                 ingredients_list = []
 
-            # Clear and recreate ingredients
             instance.ingredients.all().delete()
             for ingredient_data in ingredients_list:
                 unit_id = ingredient_data['unit']

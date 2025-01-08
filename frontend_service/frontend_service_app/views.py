@@ -5,7 +5,6 @@ from django.contrib import messages
 import requests
 import json
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
 
 from .forms import RegistrationForm
 from .forms import PasswordChangeForm
@@ -204,7 +203,7 @@ def login_view(request):
         password = request.POST.get('password', '')
         try:
             user = User.objects.get(username=username)
-            user_email = user.email  # Fetch the email from the database
+            user_email = user.email  
         except User.DoesNotExist:
             messages.error(request, 'User does not exist.')
             return redirect('login')
@@ -216,7 +215,6 @@ def login_view(request):
         response = requests.post(auth_url, data=data)
 
         if response.status_code == 200:
-        # Generate 2FA code
             code = generate_2fa()
             print(code)
             expires_at = timezone.now() + timedelta(minutes=5)
@@ -225,19 +223,17 @@ def login_view(request):
 
             if not user_email:
                 messages.error(request, 'No email found for user.')
-                #return redirect('homepage')  # Redirect only if no email
                 print("ingen mail")
             send_2fa_smtp(user_email, code)
 
             request.session['pending_username'] = username
             request.session['pending_password'] = password
-            #request.session['next_url'] = next_url
 
             messages.success(request, '2FA code sent to your email.')
-            return redirect('verify_2fa')  # Correct: Add return
+            return redirect('verify_2fa')  
         else:
             messages.error(request, 'Invalid username or password.')
-            return redirect('login')  # Or redirect back to login
+            return redirect('login')  
             
 def two_way_auth_view(request):
     if request.method == 'POST':
@@ -263,7 +259,6 @@ def two_way_auth_view(request):
             return redirect('homepage')
 
         if user_input_code == session_code:
-            # Auth request
             auth_url = f'{USER_SERVICE_URL}/token/'
             data = {'username': username, 'password': password}
             response = requests.post(auth_url, data=data)
@@ -277,7 +272,6 @@ def two_way_auth_view(request):
                 request.session['refresh_token'] = refresh_token
                 request.session['username'] = username
 
-                # Clear session variables
                 request.session.pop('user_code_2fa', None)
                 request.session.pop('user_code_expires_2fa', None)
                 request.session.pop('pending_username', None)
@@ -285,7 +279,7 @@ def two_way_auth_view(request):
                 request.session.pop('next_url', None)
 
                 messages.success(request, f'Logged in as {username} with 2FA.')
-                return redirect(next_url or 'homepage')  # Fallback to homepage if next_url is None
+                return redirect(next_url or 'homepage')  
             else:
                 messages.error(request, 'Failed to log in. Please try again.')
                 return redirect('login')
@@ -436,14 +430,11 @@ def edit_recipe(request, id):
                 recipe = recipe_response.json()
                 print('successfully retrieved recipe data')
             else:
-                # Handle error or not-found logic
                 print(request, 'Recipe not found.')
                 return redirect('user_information')
             
             if 'instructions' in recipe:
-                # Create a list of instruction texts
                 recipe_instructions = [step['instruction'] for step in recipe['instructions'] if 'instruction' in step]
-                # Replace the original instructions with just the list of strings
                 recipe['instructions'] = recipe_instructions
 
             if categories_response.status_code == 200 and units_response.status_code == 200:
@@ -451,15 +442,13 @@ def edit_recipe(request, id):
                 units = units_response.json()
                 print('här!!!')
 
-                # Pass the fetched data to the template, including the recipe
                 return render(request, 'edit_recipe.html', {
                     'categories': categories,
                     'units': units,
-                    'recipe': recipe,  # IMPORTANT: pass the recipe to the template
+                    'recipe': recipe,  
                 })
             
             elif (categories_response.status_code == 401 or units_response.status_code == 401):
-                # Handle token refresh
                 print('eller här!!')
                 new_access_token = refresh_token_on_401(refresh_token)
                 if new_access_token:
@@ -472,7 +461,6 @@ def edit_recipe(request, id):
                     if recipe_response.status_code == 200:
                         recipe = recipe_response.json()
                     else:
-                        # Handle error or not-found logic
                         print(request, 'Recipe not found.')
                         return redirect('user_information')
 
@@ -480,11 +468,10 @@ def edit_recipe(request, id):
                         categories = categories_response.json()
                         units = units_response.json()
 
-                        # Pass the fetched data to the template, including the recipe
                         return render(request, 'edit_recipe.html', {
                             'categories': categories,
                             'units': units,
-                            'recipe': recipe,  # IMPORTANT: pass the recipe to the template
+                            'recipe': recipe,  
                         })
             
             else:

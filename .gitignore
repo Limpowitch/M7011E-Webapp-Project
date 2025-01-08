@@ -1,8 +1,7 @@
-frontend_service/envFrontEnd
-
-recipe_service/envRecipeService
-
-user_service/myenv
+frontend_service/.env
+recipe_service/.env
+user_service/.env
+search_service/.env
 
 __pycache__/
     *.pyc
