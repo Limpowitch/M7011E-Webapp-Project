@@ -14,7 +14,7 @@ class RecipeListView(generics.ListAPIView):
     serializer_class = RecipeSerializer
 
     def get_queryset(self):
-        queryset = Recipe.objects.all()
+        queryset = Recipe.objects.filter(approved=True)
         limit = self.request.query_params.get('limit', None)
         if limit is not None:
             try:
@@ -28,10 +28,16 @@ class CategoryRecipesView(generics.ListAPIView):
     serializer_class = RecipeSerializer
 
     def get_queryset(self):
+        user = self.request.user
         category_name = self.kwargs.get('category')
         category = get_object_or_404(Category, name=category_name)
-        return Recipe.objects.filter(category=category)
 
+        queryset = Recipe.objects.filter(category=category)
+        if not user.is_superuser and not user.is_staff:
+            queryset = queryset.filter(approved=True)
+
+        print("Recipes returned:", queryset.values('id', 'title', 'approved'))
+        return queryset
     
 class RecipeDetailsView(generics.RetrieveAPIView):
     queryset = Recipe.objects.all()
@@ -60,7 +66,10 @@ class RecipeCreateView(generics.CreateAPIView):
         return context
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        is_approved = user.is_staff
+
+        serializer.save(user=user, approved=is_approved)
 
     def create(self, request, *args, **kwargs):
         print("Received data:", request.data)
@@ -69,10 +78,15 @@ class RecipeCreateView(generics.CreateAPIView):
         if serializer.is_valid():
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            response_data = serializer.data
+
+            # Include approval status in the response
+            response_data['approved'] = serializer.instance.approved
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             print("Validation Errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserRecipesAPIView(ListAPIView):
     serializer_class = RecipeSerializer

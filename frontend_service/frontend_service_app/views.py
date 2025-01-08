@@ -27,9 +27,22 @@ def homepage(request):
     return render(request, 'homepage.html', {'recipes': recipes})
 
 def category(request, category):
-    response = requests.get(f'{RECIPE_SERVICE_URL}/category/{category}/')
-    recipes = response.json()
+    access_token = request.session.get('access_token')
+    headers = {}
+
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+
+    response = requests.get(f'{RECIPE_SERVICE_URL}/category/{category}/', headers=headers)
+
+    if response.status_code == 200:
+        recipes = response.json()
+    else:
+        recipes = []
+        print(f"Error fetching recipes: {response.status_code}, {response.text}")
+
     return render(request, 'category.html', {'recipes': recipes})
+
 
 def recipe_detail(request, id):
     response = requests.get(f'{RECIPE_SERVICE_URL}/recipes/{id}/')
