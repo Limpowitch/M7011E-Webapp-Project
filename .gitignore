@@ -5,5 +5,13 @@ search_service/.env
 frontend_service/envFrontEndService
 recipe_service/envRecipeService
 user_service/envUserService
+frontend_service/envFrontEnd
+recipe_service/envRecipeService
+user_service/envUserService
+search_service/envSearchSetvice
+frontend_service/.env
+recipe_service/.env
+search_service/.env
+user_service/.env
 __pycache__/
     *.pyc

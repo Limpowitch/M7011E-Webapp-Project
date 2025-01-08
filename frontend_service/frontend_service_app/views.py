@@ -15,6 +15,7 @@ import random
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
+from decouple import config
 
 RECIPE_SERVICE_URL = 'http://localhost:8001'
 USER_SERVICE_URL = 'http://localhost:8002'
@@ -187,8 +188,8 @@ def generate_2fa():
 def send_2fa_smtp(to_email, code):
     smtp_host = 'smtp.gmail.com'
     smtp_port = 587
-    smtp_username = "boisencoola@gmail.com"
-    smtp_password = "zogw yahl afzl kmmn "
+    smtp_username = config('EMAIL_HOST_USER', default='noreply@localhost')
+    smtp_password = config('EMAIL_HOST_PASSWORD', default='password')
     from_email = smtp_username
     subject = "Here is your 2FA code"
 

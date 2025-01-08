@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'M7011E_DATABASE',  # Convert to string if BASE_DIR is used
         'USER': 'admin',
-        'PASSWORD': 'CoolasteGrabbarnaIPLuggetMedStoraL123',
+        'PASSWORD': config('PASSWORD_DATABASE', default='password'),
         'HOST': 'aws-m7011e.cncg2uywo7t4.eu-north-1.rds.amazonaws.com',  # Or the appropriate hostname
         'PORT': '3306',  # MySQL's default port
     }
