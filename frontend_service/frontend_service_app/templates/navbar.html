@@ -71,6 +71,10 @@
                         </form>
                     </div>
                 </div>
+                    {% if not request.session.username %}
+                        <a href="{% url 'register' %}">
+                            <button class="hover:text-red-600">Register</button>
+                    {% endif %}
                 {% endif %}
             </ul>
         </div>
