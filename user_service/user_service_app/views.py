@@ -62,7 +62,9 @@ class DeleteAccountView(APIView):
     def delete(self, request):
         user = request.user
         if user.is_authenticated:
+            print('yiyi')
             user.delete()
             return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         else:
+            print('Not authenticated')
             return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
