@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 import requests
 import json
+import theStringManager
 from django.shortcuts import render, redirect
 
 from .forms import RegistrationForm
@@ -383,7 +384,7 @@ def change_password(request):
             try:
                 response = requests.post(f"{USER_SERVICE_URL}/change-password/", json=payload, headers=headers)
                 if response.status_code == 200:
-                    messages.success(request, "Password updated successfully.")
+                    messages.success(request, "Password updated successfully.\n" + theStringManager.success())
                     return redirect('homepage')
                 else:
                     errors = response.json().get('errors', {})
@@ -412,7 +413,8 @@ def delete_account(request):
             response = requests.delete(f"{USER_SERVICE_URL}/delete-account/", headers=headers)
             if response.status_code == 204:
                 request.session.flush()
-                messages.success(request, "Your account has been deleted. We're sad to see you go!")
+                messages.success(request, "Your account has been deleted. We're sad to see you go! But before you go, "
+                                          "have some wise words: " + theStringManager.wise_words())
                 return redirect('homepage')
             else:
                 messages.error(request, response.json().get('error', 'Failed to delete account.'))
@@ -564,7 +566,7 @@ def edit_recipe(request, id):
         )
 
         if response.status_code == 200:
-            messages.success(request, 'Recipe updated successfully!')
+            messages.success(request, 'Recipe updated successfully!\n' + theStringManager.meow())
             return redirect('user_information')
         else:
             messages.error(request, 'Error while updating the recipe.')
