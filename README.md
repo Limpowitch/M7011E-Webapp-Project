@@ -13,7 +13,9 @@ The website utilize a microservice architecture and is thus divided into three d
 - (There's an additional fourth service Search_service, but it's not used)
 
 As of now the website only works for Windows because of how filepaths are handled by NPM.
-
+## Setting up the .env file
+To run this project locally, you will need the .env file containing the necessary environment variables. This file will need to be placed in the root directory of each microservice, at the same level as 'manage.py'. To clarify: 'frontend_service/.env' would be correctly placed.
+## Setting up each microservice 
 In order to get the website to run, the following commands needs to be run in a a terminal for each service:
 
 - Frontend_service
